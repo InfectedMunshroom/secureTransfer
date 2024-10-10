@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encrypt and Decrypt</title>
+</head>
+<body>
+    <h1>Encrypt and Decrypt Messages in Images</h1>
+
+    <div>
+        <h2>Encrypt</h2>
+        <input type="text" id="encryption-text" placeholder="Enter message" required>
+        <input type="file" id="encryption-file" accept="image/png" required>
+        <button onclick="encrypt()">Encrypt & Embed</button>
+        <div id="encryption-result"></div>
+    </div>
+    
+    <div>
+        <h2>Decrypt</h2>
+        <input type="text" id="decryption-key" placeholder="Enter key" required>
+        <input type="file" id="decryption-file" accept="image/png" required>
+        <button onclick="decrypt()">Decrypt & Extract</button>
+        <div id="decrypted-output"></div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
