@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-func uploadFile(url, filename string) error {
+func UploadFile(url, filename string) error {
 	file, err := os.Open(filename)
 	if err != nil {
 		return fmt.Errorf("could not open file: %v", err)
@@ -56,22 +56,22 @@ func uploadFile(url, filename string) error {
 	return nil
 }
 
-func main() {
-	// Check if enough arguments are passed
-	if len(os.Args) < 3 {
-		fmt.Println("Usage: go run client.go <https://server_url/upload> <file_path>")
-		return
-	}
+// func main() {
+// 	// Check if enough arguments are passed
+// 	if len(os.Args) < 3 {
+// 		fmt.Println("Usage: go run client.go <https://server_url/upload> <file_path>")
+// 		return
+// 	}
 
-	// Get URL and filename from command-line arguments
-	url := os.Args[1]
-	filename := os.Args[2]
+// 	// Get URL and filename from command-line arguments
+// 	url := os.Args[1]
+// 	filename := os.Args[2]
 
-	// Call the upload function
-	err := uploadFile(url, filename)
-	if err != nil {
-		fmt.Println("Error:", err)
-	} else {
-		fmt.Println("File uploaded successfully!")
-	}
-}
+// 	// Call the upload function
+// 	err := uploadFile(url, filename)
+// 	if err != nil {
+// 		fmt.Println("Error:", err)
+// 	} else {
+// 		fmt.Println("File uploaded successfully!")
+// 	}
+// }
