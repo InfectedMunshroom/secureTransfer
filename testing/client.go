@@ -59,7 +59,7 @@ func uploadFile(url, filename string) error {
 func main() {
 	// Check if enough arguments are passed
 	if len(os.Args) < 3 {
-		fmt.Println("Usage: go run client.go <server_url> <file_path>")
+		fmt.Println("Usage: go run client.go <https://server_url/upload> <file_path>")
 		return
 	}
 
