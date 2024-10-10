@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-func uploadFile(w http.ResponseWriter, r *http.Request) {
+func UploadFile(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
 		fmt.Fprintf(w, "Error parsing form: %v", err)
@@ -48,7 +48,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "File uploaded successfully: %v\n", handler.Filename)
 }
 
-func downloadFile(w http.ResponseWriter, r *http.Request) {
+func DownloadFile(w http.ResponseWriter, r *http.Request) {
 	filename := r.URL.Query().Get("filename")
 	if filename == "" {
 		http.Error(w, "Filename is missing", http.StatusBadRequest)
@@ -69,9 +69,10 @@ func downloadFile(w http.ResponseWriter, r *http.Request) {
 	io.Copy(w, file)
 }
 
+/*
 func main() {
 	http.HandleFunc("/upload", uploadFile)
-	http.HandleFunc("/download", downloadFile) 
+	http.HandleFunc("/download", downloadFile)
 
 	fmt.Println("Server started on 10.0.2.3:8080...")
 	err := http.ListenAndServe("10.0.2.3:8080", nil)
@@ -79,4 +80,4 @@ func main() {
 		fmt.Printf("Server failed to start: %v\n", err)
 	}
 }
-
+*/

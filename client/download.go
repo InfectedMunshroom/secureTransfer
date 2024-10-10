@@ -34,7 +34,7 @@ func downloadFile(filepath string, url string) error {
 }
 
 func main() {
-	if len(os.Args)<3{
+	if len(os.Args) < 3 {
 		fmt.Println("Usage: download <server_url>/download?filename=<file name> <download path>")
 		return
 
@@ -43,8 +43,7 @@ func main() {
 	url := os.Args[1]
 	filename := os.Args[2]
 
-	err := downloadFile(filename,url)
-
+	err := downloadFile(filename, url)
 
 	if err != nil {
 		fmt.Println("Error:", err)
@@ -52,4 +51,3 @@ func main() {
 		fmt.Println("Download completed!")
 	}
 }
-
