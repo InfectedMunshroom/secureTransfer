@@ -9,12 +9,6 @@ import (
 )
 
 func uploadFile(w http.ResponseWriter, r *http.Request) {
-	// Parse the multipart form
-	err := r.ParseMultipartForm(10 << 20) // Max file size of 10 MB
-	if err != nil {
-		fmt.Fprintf(w, "Error parsing form: %v", err)
-		return
-	}
 
 	// Get the file from the form
 	file, handler, err := r.FormFile("file")
