@@ -13,7 +13,7 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #eaeef1; /* Light grey background for contrast */
+            background-color: #eaeef1;
             color: #333;
             margin: 0;
             padding: 0;
@@ -28,11 +28,11 @@
             text-align: center;
             font-weight: 700;
             margin-bottom: 40px;
-            color: #4a4e69; /* Darker shade for the title */
+            color: #4a4e69;
         }
 
         .card {
-            border: none; /* No border for a cleaner look */
+            border: none;
             border-radius: 15px;
             padding: 30px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -51,11 +51,11 @@
 
         label {
             font-weight: 500;
-            color: #4a4e69; /* Darker shade for labels */
+            color: #4a4e69;
         }
 
         input[type="file"] {
-            border: 2px solid #007bff; /* Bright border */
+            border: 2px solid #007bff;
             border-radius: 5px;
             width: 100%;
             background-color: #f9f9f9;
@@ -78,7 +78,7 @@
             font-weight: 600;
             transition: background-color 0.3s, transform 0.3s;
             width: 100%;
-            margin-top: 15px; /* Space between button and input */
+            margin-top: 15px;
         }
 
         button:hover {
@@ -106,15 +106,6 @@
             object-fit: cover;
         }
 
-        .notification {
-            display: none;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1050;
-            min-width: 300px;
-        }
-
         #decrypt-result {
             margin-top: 20px;
             border-radius: 5px;
@@ -123,19 +114,73 @@
             color: #00796b;
             font-size: 18px;
             display: none;
+            white-space: pre-wrap;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            display: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .notification.success {
+            background-color: #28a745;
+        }
+
+        .notification.error {
+            background-color: #dc3545;
+        }
+
+        .notification.warning {
+            background-color: #ffc107;
         }
     </style>
 
     <script>
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.classList.add('notification');
+            notification.classList.add(type);
+            notification.innerText = message;
+
+            document.body.appendChild(notification);
+            notification.style.display = 'block';
+
+            // Automatically remove the notification after 3 seconds
+            setTimeout(() => {
+                notification.style.display = 'none';
+                document.body.removeChild(notification);
+            }, 3000);
+        }
+
+        function clearImagePreview() {
+            const imagePreview = document.getElementById('image-preview');
+            imagePreview.src = '';  // Clear the src
+            imagePreview.style.display = 'none';  // Hide the image
+        }
+
         function uploadFile(form, url, isEncryption) {
             const formData = new FormData(form);
             const loadingSpinner = document.getElementById('loading-spinner');
-            const imagePreview = document.getElementById('image-preview');
             const decryptResult = document.getElementById('decrypt-result');
 
             loadingSpinner.style.display = 'block';
-            imagePreview.style.display = 'none';
             decryptResult.style.display = 'none';
+
+            const fileInput = form.querySelector('input[type="file"]');
+            const fileType = fileInput.files[0]?.type;
+
+            if (!fileType || !fileType.startsWith('image/')) {
+                loadingSpinner.style.display = 'none';
+                showNotification("Please upload in the correct file format (image only).", "error");
+                return false; // Prevent submission
+            }
 
             fetch(url, {
                 method: 'POST',
@@ -146,41 +191,25 @@
                 loadingSpinner.style.display = 'none';
                 if (isEncryption) {
                     if (result === "success") {
-                        showNotification("Your file has been successfully uploaded and encrypted!", "success");
+                        showNotification("File successfully uploaded and encrypted!", "success");
+                        clearImagePreview();  // Clear the image
                     } else {
-                        showNotification("Something went wrong: " + result, "danger");
+                        showNotification("Something went wrong: " + result, "error");
                     }
                 } else {
-                    showNotification("Decryption successful!", "success");
-                    decryptResult.innerText = "Decrypted message: " + result;
+                    decryptResult.innerText = result; // Show only the decrypted message
                     decryptResult.style.display = 'block';
+                    showNotification("Decryption successful!", "success");
                 }
             })
             .catch(error => {
                 loadingSpinner.style.display = 'none';
-                showNotification("An error occurred: " + error, "danger");
+                decryptResult.innerText = "An error occurred: " + error;
+                decryptResult.style.display = 'block';
+                showNotification("An error occurred: " + error, "error");
             });
 
-            return false;
-        }
-
-        function showNotification(message, type) {
-            const notification = document.createElement('div');
-            notification.className = `alert alert-${type} notification alert-dismissible fade show`;
-            notification.role = 'alert';
-            notification.innerHTML = `
-                <i class="fas fa-info-circle"></i> ${message} 
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            `;
-            document.body.appendChild(notification);
-            notification.style.display = 'block';
-
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => notification.remove(), 150);
-            }, 5000);
+            return false; // Prevent default form submission
         }
 
         function previewImage(event) {
@@ -226,16 +255,17 @@
                         <label for="decrypt-image">Upload an Image</label>
                         <input type="file" class="form-control-file" name="image" id="decrypt-image" required accept="image/*">
                     </div>
-                    <button type="submit" class="btn btn-secondary btn-lg">Decrypt and Upload</button>
+                    <button type="submit" class="btn btn-secondary btn-lg">Decrypt</button>
+                    <div class="loading-spinner" id="loading-spinner">
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
                 </form>
-                <div id="decrypt-result" class="alert"></div>
+                <div id="decrypt-result"></div>
             </div>
         </div>
     </div>
-
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 
 </html>
