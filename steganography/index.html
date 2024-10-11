@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steganography</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #eaeef1;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            margin-top: 60px;
+            max-width: 800px;
+        }
+
+        h1 {
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 40px;
+            color: #4a4e69;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-color: #ffffff;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            font-weight: 500;
+            color: #4a4e69;
+        }
+
+        input[type="file"] {
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            width: 100%;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            padding: 10px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="file"]:hover {
+            border-color: #0056b3;
+        }
+
+        button {
+            background-color: #007bff;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-size: 16px;
+            color: #ffffff;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.3s;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading-spinner .spinner-border {
+            color: #007bff;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            display: none;
+            margin-top: 20px;
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            object-fit: cover;
+        }
+
+        #decrypt-result {
+            margin-top: 20px;
+            border-radius: 5px;
+            padding: 15px;
+            background-color: #e0f7fa;
+            color: #00796b;
+            font-size: 18px;
+            display: none;
+            white-space: pre-wrap;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            display: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .notification.success {
+            background-color: #28a745;
+        }
+
+        .notification.error {
+            background-color: #dc3545;
+        }
+
+        .notification.warning {
+            background-color: #ffc107;
+        }
+    </style>
+
+    <script>
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.classList.add('notification');
+            notification.classList.add(type);
+            notification.innerText = message;
+
+            document.body.appendChild(notification);
+            notification.style.display = 'block';
+
+            // Automatically remove the notification after 3 seconds
+            setTimeout(() => {
+                notification.style.display = 'none';
+                document.body.removeChild(notification);
+            }, 3000);
+        }
+
+        function clearImagePreview() {
+            const imagePreview = document.getElementById('image-preview');
+            imagePreview.src = '';  // Clear the src
+            imagePreview.style.display = 'none';  // Hide the image
+        }
+
+        function uploadFile(form, url, isEncryption) {
+            const formData = new FormData(form);
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const decryptResult = document.getElementById('decrypt-result');
+
+            loadingSpinner.style.display = 'block';
+            decryptResult.style.display = 'none';
+
+            const fileInput = form.querySelector('input[type="file"]');
+            const fileType = fileInput.files[0]?.type;
+
+            if (!fileType || !fileType.startsWith('image/')) {
+                loadingSpinner.style.display = 'none';
+                showNotification("Please upload in the correct file format (image only).", "error");
+                return false; // Prevent submission
+            }
+
+            fetch(url, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(result => {
+                loadingSpinner.style.display = 'none';
+                if (isEncryption) {
+                    if (result === "success") {
+                        showNotification("File successfully uploaded and encrypted!", "success");
+                        clearImagePreview();  // Clear the image
+                    } else {
+                        showNotification("Something went wrong: " + result, "error");
+                    }
+                } else {
+                    decryptResult.innerText = result; // Show only the decrypted message
+                    decryptResult.style.display = 'block';
+                    showNotification("Decryption successful!", "success");
+                }
+            })
+            .catch(error => {
+                loadingSpinner.style.display = 'none';
+                decryptResult.innerText = "An error occurred: " + error;
+                decryptResult.style.display = 'block';
+                showNotification("An error occurred: " + error, "error");
+            });
+
+            return false; // Prevent default form submission
+        }
+
+        function previewImage(event) {
+            const imagePreview = document.getElementById('image-preview');
+            imagePreview.src = URL.createObjectURL(event.target.files[0]);
+            imagePreview.style.display = 'block';
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Top Secret!</h1>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h4 class="card-title">Encrypt Your Message</h4>
+                <form onsubmit="return uploadFile(this, '/upload_encrypt', true);" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="image">Upload an Image</label>
+                        <input type="file" class="form-control-file" name="image" id="image" required accept="image/*" onchange="previewImage(event)">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message to Encrypt</label>
+                        <textarea class="form-control" name="message" id="message" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg">Encrypt and Upload</button>
+                    <div class="loading-spinner" id="loading-spinner">
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+                <img id="image-preview" class="image-preview" alt="Image Preview">
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Decrypt Your Message</h4>
+                <form onsubmit="return uploadFile(this, '/upload_decrypt', false);" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="decrypt-image">Upload an Image</label>
+                        <input type="file" class="form-control-file" name="image" id="decrypt-image" required accept="image/*">
+                    </div>
+                    <button type="submit" class="btn btn-secondary btn-lg">Decrypt</button>
+                    <div class="loading-spinner" id="loading-spinner">
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+                <div id="decrypt-result"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
