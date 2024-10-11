@@ -92,16 +92,16 @@ func decryptWithRSA(privateKey *rsa.PrivateKey, encryptedAESKey []byte) ([]byte,
 	return decryptedAESKey, nil
 }
 
-func DecryptAES(path string, filepath string) ([]byte, error) {
+func DecryptAES(path string, encryptedAESKey []byte) ([]byte, error) {
 	rsaPrivateKey, err := loadOpenSSHPrivateKey(path)
 	if err != nil {
 		return nil, fmt.Errorf("Error: Could not parse ssh key.\n", err)
 	}
 
-	encryptedAESKey, err := ioutil.ReadFile(filepath)
-	if err != nil {
-		return nil, err
-	}
+	// encryptedAESKey, err := ioutil.ReadFile(filepath)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	aeskey, err := decryptWithRSA(rsaPrivateKey, encryptedAESKey)
 	if err != nil {
