@@ -34,7 +34,6 @@ func main() {
 		log.Fatalf("Server failed to start: %v", err)
 	}
 }
-
 func uploadEncryptHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
@@ -81,7 +80,8 @@ func uploadEncryptHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "Image uploaded and encrypted as output.png. Check /temp directory.")
+	// Return a simple success message for the frontend to catch
+	fmt.Fprintf(w, "success")
 }
 
 func uploadDecryptHandler(w http.ResponseWriter, r *http.Request) {
