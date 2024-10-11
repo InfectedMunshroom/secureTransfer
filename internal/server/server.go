@@ -54,7 +54,7 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else if strings.HasSuffix(handler.Filename, ".png") {
-		destDir = "./file"
+		destDir = "./file_images"
 		fileContent = fileBytes // No decryption, just save the original content
 	} else {
 		fmt.Fprintf(w, "File must either start with 'aes' or end with '.png'")

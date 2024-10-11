@@ -61,7 +61,7 @@ func UploadFile(url, filename string) error {
 func main() {
 	// Check if enough arguments are passed
 	if len(os.Args) < 3 {
-		fmt.Println("Usage: go run client.go <https://server_url/upload> <file_path>")
+		fmt.Println("Usage: go run client.go <https://server_url/upload> <file_path> <rsa pub path>")
 		return
 	}
 
@@ -79,10 +79,30 @@ func main() {
 	err = ioutil.WriteFile(name, encryptedFile, 0644)
 
 	// Call the upload function
-	err = UploadFile(url, "temp")
+	err = UploadFile(url, name)
 	if err != nil {
 		fmt.Println("Error:", err)
 	} else {
 		fmt.Println("File uploaded successfully!")
 	}
+
+	encryptedKey, err := encryptdecrypt.EncryptAES(os.Args[3], []byte(aeskey))
+	if err != nil {
+		fmt.Println("Error in encrypting file")
+		return
+	}
+
+	name = "encrypted_" + "aes_encrypted_" + filename
+	err = ioutil.WriteFile(name, encryptedKey, 0644)
+	if err != nil {
+		fmt.Println("Error in writing key to file")
+		return
+	}
+	err = UploadFile(url, name)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println("AES key uploaded successfully")
+	}
+
 }
