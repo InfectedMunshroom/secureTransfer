@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
+	"secureTransfer/encryptdecrypt"
 )
 
 // Helper function to create a multipart file field
@@ -35,7 +37,7 @@ func createFileField(writer *multipart.Writer, fieldname, filename string) error
 }
 
 // UploadFiles uploads both the .png file and the aes_ .png file to the server
-func UploadFiles(filePath, aesFilePath string) error {
+func UploadFiles(filePath, aesFilePath, url string) error {
 	// Prepare a buffer to hold the multipart data
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -57,8 +59,8 @@ func UploadFiles(filePath, aesFilePath string) error {
 	}
 
 	// Send the POST request to the server
-	uploadURL := "http://localhost:8080/upload" // Adjust the URL if necessary
-	req, err := http.NewRequest("POST", uploadURL, body)
+	// Adjust the URL if necessary
+	req, err := http.NewRequest("POST", url, body)
 	if err != nil {
 		return fmt.Errorf("error creating request: %v", err)
 	}
@@ -87,11 +89,31 @@ func UploadFiles(filePath, aesFilePath string) error {
 
 func main() {
 	// Paths to the files to be uploaded
+	aeskey := "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+	url := "http://localhost:8080/upload"
 	filePath := os.Args[1]    // Path to the .png file
-	aesFilePath := os.Args[2] // Path to the aes_ .png file
+	rsaFilePath := os.Args[2] // Path to the rsa.pub file
+	encryptedFile, err := encryptdecrypt.EncodeFile([]byte(aeskey), filePath)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	name := "encrypted_" + filepath.Base(filePath)
+	err = ioutil.WriteFile(name, encryptedFile, 0644)
+
+	nameAES := "aes_" + name
+
+	encryptedKey, err := encryptdecrypt.EncryptAES(rsaFilePath, []byte(aeskey))
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	err = ioutil.WriteFile(nameAES, encryptedKey, 0644)
 
 	// Upload the files
-	err := UploadFiles(filePath, aesFilePath)
+	err = UploadFiles(name, nameAES, url)
 	if err != nil {
 		fmt.Printf("Error uploading files: %v\n", err)
 	} else {
