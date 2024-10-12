@@ -11,6 +11,7 @@ import (
 	"secureTransfer/encryptdecrypt"
 )
 
+// Hi this is for testing
 func uploadFile(url, filename string) error {
 	file, err := os.Open(filename)
 	if err != nil {
