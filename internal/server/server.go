@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -9,18 +10,6 @@ import (
 	"secureTransfer/encryptdecrypt"
 	"strings"
 )
-
-// Placeholder function to decrypt the AES key with the server's private key
-func decryptAESKey(encryptedKey []byte) ([]byte, error) {
-	// Implement your decryption logic for the AES key here
-	return encryptedKey, nil // Replace with actual decrypted AES key
-}
-
-// Placeholder function to decrypt the file with the AES key
-func decryptWithAESKey(encryptedData, aesKey []byte) ([]byte, error) {
-	// Implement your AES decryption logic here
-	return encryptedData, nil // Replace with actual decrypted file data
-}
 
 func UploadFiles(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(10 << 20) // Allow file size up to 10 MB
@@ -116,9 +105,49 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Files uploaded and decrypted successfully. Decrypted file saved as: %s\n", decryptedFilePath)
 }
 
-// func main() {
-// 	// Simple HTTP server to handle file uploads
-// 	http.HandleFunc("/upload", UploadFiles)
-// 	fmt.Println("Server started on :8080, use /upload to upload files")
-// 	log.Fatal(http.ListenAndServe(":8080", nil))
-// }
+func DownloadFile(w http.ResponseWriter, r *http.Request) {
+	// Specify the path of the file in the "info" directory to download.
+	fileName := r.URL.Query().Get("file") // E.g., "example.png"
+	if fileName == "" {
+		http.Error(w, "File not specified.", http.StatusBadRequest)
+		return
+	}
+	infoDir := "./info"
+	filePath := filepath.Join(infoDir, fileName)
+
+	// Check if the file exists
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		http.Error(w, "File not found.", http.StatusNotFound)
+		return
+	}
+
+	// Encrypt the file data using AES (Assuming EncryptAES is your encryption function)
+	aesKey := "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" // Replace with your actual AES key generation method
+	encryptedData, err := encryptdecrypt.EncodeFile([]byte(aesKey), filePath)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error in encrypting file for transit: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Encrypt the AES key using RSA (Assuming EncryptRSA is your encryption function)
+	encryptedAESKey, err := encryptdecrypt.EncryptAES("./final.pub", []byte(aesKey))
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error in encrypting AES key: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Create a response object containing the encrypted AES key and the encrypted file data
+	response := map[string]interface{}{
+		"aes_key":   encryptedAESKey,
+		"file_data": encryptedData,
+	}
+
+	// Send the response as JSON
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, fmt.Sprintf("Error encoding response: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Println("File encrypted and sent successfully:", fileName)
+}
