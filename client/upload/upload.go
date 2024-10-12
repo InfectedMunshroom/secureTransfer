@@ -1,4 +1,4 @@
-package main
+package client
 
 import (
 	"bytes"
@@ -87,27 +87,26 @@ func UploadFiles(filePath, aesFilePath, url string) error {
 	return nil
 }
 
-func main() {
+func UploadFilesAutomated(filePath, rsaFilePath string) error {
 	// Paths to the files to be uploaded
 	aeskey := "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-	url := "http://localhost:8080/upload"
-	filePath := os.Args[1]    // Path to the .png file
-	rsaFilePath := os.Args[2] // Path to the rsa.pub file
+	url := "http://localhost:8081/upload"
 	encryptedFile, err := encryptdecrypt.EncodeFile([]byte(aeskey), filePath)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 	name := "encrypted_" + filepath.Base(filePath)
 	err = ioutil.WriteFile(name, encryptedFile, 0644)
+	if err != nil {
+		return err
+	}
 
 	nameAES := "aes_" + name
 
 	encryptedKey, err := encryptdecrypt.EncryptAES(rsaFilePath, []byte(aeskey))
 
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 
 	err = ioutil.WriteFile(nameAES, encryptedKey, 0644)
@@ -115,8 +114,9 @@ func main() {
 	// Upload the files
 	err = UploadFiles(name, nameAES, url)
 	if err != nil {
-		fmt.Printf("Error uploading files: %v\n", err)
+		return err
 	} else {
-		fmt.Println("Files uploaded successfully.")
+		fmt.Println("Files uploaded successfully")
+		return nil
 	}
 }
