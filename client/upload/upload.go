@@ -11,7 +11,7 @@ import (
 	"secureTransfer/encryptdecrypt"
 )
 
-func UploadFile(url, filename string) error {
+func uploadFile(url, filename string) error {
 	file, err := os.Open(filename)
 	if err != nil {
 		return fmt.Errorf("could not open file: %v", err)
@@ -58,6 +58,47 @@ func UploadFile(url, filename string) error {
 	return nil
 }
 
+func UploadFileWithAES(aeskey string, filename string, url string, rsaPath string) error {
+	encryptedFile, err := encryptdecrypt.EncodeFile([]byte(aeskey), filename)
+
+	if err != nil {
+		return fmt.Errorf("Error in encrypting file: ", err)
+	}
+	var name string = "encrypted_" + filename
+	err = ioutil.WriteFile(name, encryptedFile, 0644)
+
+	// Call the upload function
+
+	encryptedKey, err := encryptdecrypt.EncryptAES(rsaPath, []byte(aeskey))
+	if err != nil {
+		return fmt.Errorf("Error in encrypting AES key", err)
+	}
+
+	nameAES := "aes_encrypted_" + filename
+	err = ioutil.WriteFile(name, encryptedKey, 0644)
+	if err != nil {
+		return fmt.Errorf("Error in writing encrypted key to file", err)
+	}
+	err = uploadFile(url, name)
+	if err != nil {
+		return fmt.Errorf("Error in uploading file: ", err)
+	} else {
+		fmt.Println("File uploaded successfully")
+	}
+
+	fmt.Println("File uploaded successfully!")
+
+	err = uploadFile(url, nameAES)
+	if err != nil {
+		return fmt.Errorf("Error in uploading AES encrypted file: ", err)
+	} else {
+		fmt.Println("AES key uploaded successfully")
+	}
+
+	return nil
+
+}
+
 func main() {
 	// Check if enough arguments are passed
 	if len(os.Args) < 3 {
@@ -68,41 +109,14 @@ func main() {
 	// Get URL and filename from command-line arguments
 	url := os.Args[1]
 	filename := os.Args[2]
+	rsaFile := os.Args[3]
 	aeskey := "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 
-	encryptedFile, err := encryptdecrypt.EncodeFile([]byte(aeskey), filename)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	var name string = "encrypted_" + filename
-	err = ioutil.WriteFile(name, encryptedFile, 0644)
-
-	// Call the upload function
-	err = UploadFile(url, name)
-	if err != nil {
-		fmt.Println("Error:", err)
-	} else {
-		fmt.Println("File uploaded successfully!")
-	}
-
-	encryptedKey, err := encryptdecrypt.EncryptAES(os.Args[3], []byte(aeskey))
-	if err != nil {
-		fmt.Println("Error in encrypting file")
-		return
-	}
-
-	name = "encrypted_" + "aes_encrypted_" + filename
-	err = ioutil.WriteFile(name, encryptedKey, 0644)
-	if err != nil {
-		fmt.Println("Error in writing key to file")
-		return
-	}
-	err = UploadFile(url, name)
+	err := UploadFileWithAES(aeskey, filename, url, rsaFile)
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		fmt.Println("AES key uploaded successfully")
+		fmt.Println("Transaction completed successfully")
 	}
 
 }

@@ -11,14 +11,6 @@ import (
 	"strings"
 )
 
-// Placeholder for the actual DecryptAES function
-func DecryptAES(encryptedData []byte) ([]byte, error) {
-	// Implement your decryption logic here.
-	// For example, use AES-256 decryption.
-	// Return the decrypted data.
-	return encryptedData, nil // Modify this to return the actual decrypted data.
-}
-
 func UploadFile(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
@@ -78,7 +70,7 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "File uploaded successfully: %v\n", handler.Filename)
+	fmt.Fprintf(w, "File uploaded successfully: %v\n,Destionaion: %v", handler.Filename, destPath)
 }
 
 func DownloadFile(w http.ResponseWriter, r *http.Request) {
