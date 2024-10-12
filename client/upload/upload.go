@@ -1,4 +1,4 @@
-package upload
+package main
 
 import (
 	"bytes"
@@ -8,116 +8,115 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"path/filepath"
 	"secureTransfer/encryptdecrypt"
 )
 
-// Hi this is for testing
-func uploadFile(url, filename string) error {
+// Helper function to create a multipart file field
+func createFileField(writer *multipart.Writer, fieldname, filename string) error {
+	// Open the file
 	file, err := os.Open(filename)
 	if err != nil {
-		return fmt.Errorf("could not open file: %v", err)
+		return fmt.Errorf("error opening file: %v", err)
 	}
 	defer file.Close()
 
-	body := &bytes.Buffer{}
-	writer := multipart.NewWriter(body)
-
-	part, err := writer.CreateFormFile("file", filename)
+	// Create a form file field in the multipart writer
+	part, err := writer.CreateFormFile(fieldname, filepath.Base(filename))
 	if err != nil {
-		return fmt.Errorf("could not create form file: %v", err)
+		return fmt.Errorf("error creating form file field: %v", err)
 	}
 
+	// Copy the file content to the form file field
 	_, err = io.Copy(part, file)
 	if err != nil {
-		return fmt.Errorf("could not copy file: %v", err)
+		return fmt.Errorf("error copying file content: %v", err)
 	}
 
-	err = writer.Close()
+	return nil
+}
+
+// UploadFiles uploads both the .png file and the aes_ .png file to the server
+func UploadFiles(filePath, aesFilePath, url string) error {
+	// Prepare a buffer to hold the multipart data
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+
+	// Add the main file (<file name>.png) to the request
+	if err := createFileField(writer, "file", filePath); err != nil {
+		return fmt.Errorf("error adding file field: %v", err)
+	}
+
+	// Add the AES-encrypted file (aes_<file name>.png) to the request
+	if err := createFileField(writer, "aesFile", aesFilePath); err != nil {
+		return fmt.Errorf("error adding AES file field: %v", err)
+	}
+
+	// Close the multipart writer to finalize the form data
+	err := writer.Close()
 	if err != nil {
-		return fmt.Errorf("could not close writer: %v", err)
+		return fmt.Errorf("error closing multipart writer: %v", err)
 	}
 
+	// Send the POST request to the server
+	// Adjust the URL if necessary
 	req, err := http.NewRequest("POST", url, body)
 	if err != nil {
-		return fmt.Errorf("could not create request: %v", err)
+		return fmt.Errorf("error creating request: %v", err)
 	}
+
+	// Set the content type to multipart/form-data
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
+	// Make the request
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return fmt.Errorf("could not send request: %v", err)
+		return fmt.Errorf("error making POST request: %v", err)
 	}
 	defer resp.Body.Close()
 
+	// Read the response from the server
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return fmt.Errorf("could not read response: %v", err)
+		return fmt.Errorf("error reading response: %v", err)
 	}
 
-	fmt.Println("Server response:", string(respBody))
+	// Print the server response
+	fmt.Println("Server Response:", string(respBody))
 	return nil
 }
 
-func UploadFileWithAES(aeskey string, filename string, url string, rsaPath string) error {
-	encryptedFile, err := encryptdecrypt.EncodeFile([]byte(aeskey), filename)
-
+func main() {
+	// Paths to the files to be uploaded
+	aeskey := "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+	url := "http://localhost:8080/upload"
+	filePath := os.Args[1]    // Path to the .png file
+	rsaFilePath := os.Args[2] // Path to the rsa.pub file
+	encryptedFile, err := encryptdecrypt.EncodeFile([]byte(aeskey), filePath)
 	if err != nil {
-		return fmt.Errorf("Error in encrypting file: ", err)
+		fmt.Println(err)
+		return
 	}
-	var name string = "encrypted_" + filename
+	name := "encrypted_" + filepath.Base(filePath)
 	err = ioutil.WriteFile(name, encryptedFile, 0644)
 
-	// Call the upload function
+	nameAES := "aes_" + name
 
-	encryptedKey, err := encryptdecrypt.EncryptAES(rsaPath, []byte(aeskey))
+	encryptedKey, err := encryptdecrypt.EncryptAES(rsaFilePath, []byte(aeskey))
+
 	if err != nil {
-		return fmt.Errorf("Error in encrypting AES key", err)
+		fmt.Println(err)
+		return
 	}
 
-	nameAES := "aes_encrypted_" + filename
-	err = ioutil.WriteFile(name, encryptedKey, 0644)
+	err = ioutil.WriteFile(nameAES, encryptedKey, 0644)
+
+	// Upload the files
+	err = UploadFiles(name, nameAES, url)
 	if err != nil {
-		return fmt.Errorf("Error in writing encrypted key to file", err)
-	}
-	err = uploadFile(url, name)
-	if err != nil {
-		return fmt.Errorf("Error in uploading file: ", err)
+		fmt.Printf("Error uploading files: %v\n", err)
 	} else {
-		fmt.Println("File uploaded successfully")
+		fmt.Println("Files uploaded successfully.")
 	}
-
-	fmt.Println("File uploaded successfully!")
-
-	err = uploadFile(url, nameAES)
-	if err != nil {
-		return fmt.Errorf("Error in uploading AES encrypted file: ", err)
-	} else {
-		fmt.Println("AES key uploaded successfully")
-	}
-
-	return nil
-
 }
-
-// func main() {
-//Check if enough arguments are passed
-// if len(os.Args) < 3 {
-// fmt.Println("Usage: go run client.go <http://server_url/upload> <file_path> <rsa pub path>")
-// return
-// }
-//
-//	Get URL and filename from command-line arguments
-// url := os.Args[1]
-// filename := os.Args[2]
-// rsaFile := os.Args[3]
-// aeskey := "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-//
-// err := UploadFileWithAES(aeskey, filename, url, rsaFile)
-// if err != nil {
-// fmt.Println(err)
-// } else {
-// fmt.Println("Transaction completed successfully")
-// }
-//
-// }
