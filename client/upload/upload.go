@@ -100,24 +100,24 @@ func UploadFileWithAES(aeskey string, filename string, url string, rsaPath strin
 
 }
 
-func main() {
-	// Check if enough arguments are passed
-	if len(os.Args) < 3 {
-		fmt.Println("Usage: go run client.go <https://server_url/upload> <file_path> <rsa pub path>")
-		return
-	}
-
-	// Get URL and filename from command-line arguments
-	url := os.Args[1]
-	filename := os.Args[2]
-	rsaFile := os.Args[3]
-	aeskey := "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-
-	err := UploadFileWithAES(aeskey, filename, url, rsaFile)
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println("Transaction completed successfully")
-	}
-
-}
+// func main() {
+//Check if enough arguments are passed
+// if len(os.Args) < 3 {
+// fmt.Println("Usage: go run client.go <http://server_url/upload> <file_path> <rsa pub path>")
+// return
+// }
+//
+//	Get URL and filename from command-line arguments
+// url := os.Args[1]
+// filename := os.Args[2]
+// rsaFile := os.Args[3]
+// aeskey := "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+//
+// err := UploadFileWithAES(aeskey, filename, url, rsaFile)
+// if err != nil {
+// fmt.Println(err)
+// } else {
+// fmt.Println("Transaction completed successfully")
+// }
+//
+// }
