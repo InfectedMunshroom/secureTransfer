@@ -110,7 +110,7 @@ func uploadEncryptHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = client.UploadFilesAutomated(outputPath, "/mnt/Disk_2/secureTransfer/project/secureTransfer/final.pub")
+	err = client.UploadFilesAutomated(outputPath, "./final.pub")
 	if err != nil {
 		http.Error(w, "Error in uploading image to server", http.StatusInternalServerError)
 		fmt.Println(err)
