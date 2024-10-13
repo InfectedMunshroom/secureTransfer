@@ -24,6 +24,13 @@ func main() {
 	http.HandleFunc("/down", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./download.html") // Serve download.html from the root directory
 	})
+	http.HandleFunc("/decrypt", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./deindex.html") // Serve decrypt.html from the root directory
+	})
+	http.HandleFunc("/encrypt", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./main.html") // Serve decrypt.html from the root directory
+	})
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) { http.ServeFile(w, r, "./index.html") })
 
 	http.HandleFunc("/download", downloadHandler)
