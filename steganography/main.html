@@ -51,7 +51,7 @@
             color: #ffffff;
             font-size: 1em; 
             transition: border-color 0.3s;
-            resize: none; 
+            resize: vertical; /* Change to vertical for resizing */
         }
         input[type="file"]:focus,
         input[type="text"]:focus,
@@ -62,7 +62,7 @@
         button {
             width: 99%;
             padding: 14px;
-            background-color:#007acc; 
+            background-color: #007acc; 
             color: white;
             border: none;
             border-radius: 5px;
@@ -97,14 +97,9 @@
         }
         textarea {
             height: 150px; 
-            resize: none; 
             font-family: 'Helvetica Neue', Arial, sans-serif;
             font-size: 1.2em; 
             overflow: auto; 
-        }
-        .draggable {
-            position: relative;
-            cursor: move;
         }
         .file-types {
             font-size: 0.9em;
@@ -127,7 +122,7 @@
             position: absolute;
             top: 20px;
             left: 20px;
-            background-color:#007acc;
+            background-color: #007acc;
             padding: 10px 15px;
             border-radius: 5px;
             color: white;
@@ -158,16 +153,14 @@
     <h1>Upload and Encrypt</h1>
     <form id="uploadForm" enctype="multipart/form-data">
         <input type="text" name="filepath" placeholder="Enter server port" required>
+        <input type="text" name="filename" placeholder="Enter file name" required>
         <input type="file" name="image" accept="image/*" required>
         <div class="file-types">Accepted file types: .png</div>
-        <div class="draggable">
-            <textarea name="message" placeholder="Enter message to encrypt" required></textarea>
-        </div>
+        <textarea name="message" placeholder="Enter message to encrypt" required></textarea>
         <button type="submit">Upload and Encrypt</button>
     </form>
     <div id="notification" class="notification"></div>
     <div id="loading" class="loading"><i class="fas fa-spinner fa-spin"></i> Uploading...</div>
-
 </div>
 
 <script>
@@ -207,29 +200,6 @@
             notification.style.display = 'none';
         }, 3000);
     }
-
-    // Draggable text area
-    const textArea = document.querySelector('textarea');
-    let isDragging = false;
-
-    textArea.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        textArea.style.position = 'absolute';
-        textArea.style.zIndex = '1000';
-        textArea.style.left = `${e.pageX}px`;
-        textArea.style.top = `${e.pageY}px`;
-    });
-
-    document.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-            textArea.style.left = `${e.pageX}px`;
-            textArea.style.top = `${e.pageY}px`;
-        }
-    });
-
-    document.addEventListener('mouseup', () => {
-        isDragging = false;
-    });
 </script>
 
 </body>
