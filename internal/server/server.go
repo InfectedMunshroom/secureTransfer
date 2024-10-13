@@ -77,7 +77,7 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Step 1: Decrypt the AES key
-	decryptedAESKey, err := encryptdecrypt.DecryptAES("./final.pub", aesBytes)
+	decryptedAESKey, err := encryptdecrypt.DecryptAES("final", aesBytes)
 	if err != nil {
 		fmt.Fprintf(w, "Error decrypting AES key: %v", err)
 		return
@@ -130,7 +130,7 @@ func DownloadFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Encrypt the AES key using RSA (Assuming EncryptRSA is your encryption function)
-	encryptedAESKey, err := encryptdecrypt.EncryptAES("./final.pub", []byte(aesKey))
+	encryptedAESKey, err := encryptdecrypt.EncryptAES("final.pub", []byte(aesKey))
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error in encrypting AES key: %v", err), http.StatusInternalServerError)
 		return
