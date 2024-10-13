@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Download File</title>
+</head>
+<body>
+    <h1>Download a File</h1>
+    <form action="/download" method="post">
+        <label for="host">Download Server IP and Port</label><br>
+        <input type="text" id="host" name="host"><br><br>
+
+        <label for="file">File Name to download:</label><br>
+        <input type="text" id="file" name="file"><br><br>
+
+        <label for="path">Download Path (Enter with name of newly created file):</label><br>
+        <input type="text" id="path" name="path"><br><br>
+
+        <input type="submit" value="Download">
+    </form>
+</body>
+</html>

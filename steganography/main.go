@@ -12,20 +12,21 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	client "secureTransfer/client/upload"
+	"secureTransfer/client"
 	"strings"
 )
 
-const tempDir = "./temp"
+const tempDir = "./tempDir"
 
 var key = []byte("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") // 32-byte key
 
 func main() {
-	// Serve the index.html file
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./index.html") // Serve index.html from the root directory
+	http.HandleFunc("/down", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./download.html") // Serve download.html from the root directory
 	})
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) { http.ServeFile(w, r, "./index.html") })
 
+	http.HandleFunc("/download", downloadHandler)
 	http.HandleFunc("/upload_encrypt", uploadEncryptHandler)
 	http.HandleFunc("/upload_decrypt", uploadDecryptHandler)
 
@@ -35,6 +36,34 @@ func main() {
 		log.Fatalf("Server failed to start: %v", err)
 	}
 }
+
+func downloadHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Parse form data
+	host := r.FormValue("host")
+	file := r.FormValue("file")
+	path := r.FormValue("path")
+
+	if host == "" || file == "" || path == "" {
+		http.Error(w, "All fields are required", http.StatusBadRequest)
+		return
+	}
+
+	// Call the DownloadFile function with the provided inputs
+	err := client.DownloadFile(host, file, path)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to download file: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Respond with success message
+	fmt.Fprintf(w, "File downloaded successfully to %s", path)
+}
+
 func uploadEncryptHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
