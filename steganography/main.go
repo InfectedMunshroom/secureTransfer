@@ -43,7 +43,6 @@ func main() {
 		log.Fatalf("Server failed to start: %v", err)
 	}
 }
-
 func downloadHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
@@ -91,6 +90,23 @@ func uploadEncryptHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Read the filename from the form data
+	filename := r.FormValue("filename")
+	if filename == "" {
+		http.Error(w, "Filename is required", http.StatusBadRequest)
+		return
+	}
+
+	// Determine the image file type based on the uploaded file
+	ext := filepath.Ext(filename)
+	if ext == "" {
+		// Assume .png if no extension is provided
+		ext = ".png"
+	}
+
+	// Ensure the filename has the correct extension
+	filename = strings.TrimSuffix(filename, ext) + ext
+
 	imgData, err := ioutil.ReadAll(file)
 	if err != nil {
 		http.Error(w, "Unable to read image", http.StatusInternalServerError)
@@ -108,9 +124,9 @@ func uploadEncryptHandler(w http.ResponseWriter, r *http.Request) {
 	imgData = append(imgData, []byte("---END---")...)
 	imgData = append(imgData, []byte(encryptedMsg)...)
 
-	// Save the modified image to the /temp directory
-	os.Mkdir(tempDir, 0755)
-	outputPath := filepath.Join(tempDir, "output.png")
+	// Save the modified image using the provided filename
+	os.MkdirAll(tempDir, 0755)                     // Create tempDir if it doesn't exist
+	outputPath := filepath.Join(tempDir, filename) // Use the provided filename
 	err = ioutil.WriteFile(outputPath, imgData, 0644)
 	if err != nil {
 		http.Error(w, "Unable to save image", http.StatusInternalServerError)
