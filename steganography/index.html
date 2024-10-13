@@ -230,7 +230,6 @@
             transition: opacity 0.5s;
         }
 
-        /* Social icons */
         .social-icons {
             display: flex;
             justify-content: center;
@@ -243,7 +242,6 @@
             font-size: 1.5rem;
         }
 
-        /* Improved Button Styles */
         .section button {
             border-radius: 25px;
             font-weight: 500;
@@ -348,22 +346,18 @@
 
 
     <button id="backToTop" title="Back to top"><i class="fas fa-chevron-up"></i></button>
-    <div class="notification" id="notification">File uploaded successfully!</div>
 
     <script>
-        // Back to top button
         const backToTopButton = document.getElementById("backToTop");
         backToTopButton.addEventListener("click", () => {
             window.scrollTo({top: 0, behavior: "smooth"});
         });
 
-        // Accordion functionality
         function toggleAccordion(event) {
             const item = event.currentTarget.parentElement;
             item.classList.toggle("active");
         }
 
-        // Show notification
         function showNotification(message) {
             const notification = document.getElementById("notification");
             notification.textContent = message;
