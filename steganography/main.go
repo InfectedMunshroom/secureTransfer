@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	client "secureTransfer/client/upload"
 	"strings"
 )
 
@@ -77,6 +78,13 @@ func uploadEncryptHandler(w http.ResponseWriter, r *http.Request) {
 	err = ioutil.WriteFile(outputPath, imgData, 0644)
 	if err != nil {
 		http.Error(w, "Unable to save image", http.StatusInternalServerError)
+		return
+	}
+
+	err = client.UploadFilesAutomated(outputPath, "/mnt/Disk_2/secureTransfer/project/secureTransfer/final.pub")
+	if err != nil {
+		http.Error(w, "Error in uploading image to server", http.StatusInternalServerError)
+		fmt.Println(err)
 		return
 	}
 

@@ -10,7 +10,7 @@ import (
 
 func main() {
 	http.HandleFunc("/upload", server.UploadFiles)
-	// http.HandleFunc("/download", server.DownloadFile)
+	http.HandleFunc("/download", server.DownloadFile)
 
 	fmt.Println("Server is running on ", os.Args[1])
 	err := http.ListenAndServe(os.Args[1], nil)
