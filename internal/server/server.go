@@ -77,7 +77,7 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Step 1: Decrypt the AES key
-	decryptedAESKey, err := encryptdecrypt.DecryptAES("/mnt/Disk_2/secureTransfer/project/secureTransfer/final", aesBytes)
+	decryptedAESKey, err := encryptdecrypt.DecryptAES("./final.pub", aesBytes)
 	if err != nil {
 		fmt.Fprintf(w, "Error decrypting AES key: %v", err)
 		return
