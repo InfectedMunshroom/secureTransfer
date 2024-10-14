@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure File Transfer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #0d1117;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0 20px;
+            flex-direction: column;
+        }
+        h1 {
+            text-align: center;
+            color: #007acc;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+        .form-container {
+            width: 100%;
+            max-width: 600px;
+            max-height: 600px;
+            padding: 30px;
+            border-radius: 10px;
+            background-color: #161b22;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        input[type="file"],
+        input[type="text"],
+        textarea {
+            width: calc(100% - 30px); 
+            padding: 10px; 
+            margin: 10px 0;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #21262d;
+            color: #ffffff;
+            font-size: 1em; 
+            transition: border-color 0.3s;
+            resize: vertical; /* Change to vertical for resizing */
+        }
+        input[type="file"]:focus,
+        input[type="text"]:focus,
+        textarea:focus {
+            border-color: #007acc;
+            outline: none;
+        }
+        button {
+            width: 99%;
+            padding: 14px;
+            background-color: #007acc; 
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2em;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #007acc;
+            transform: translateY(-1px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .notification {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            text-align: center;
+            width: 100%;
+        }
+        .success {
+            background-color: #4caf50;
+            color: #ffffff;
+        }
+        .error {
+            background-color: #f44336;
+            color: #ffffff;
+        }
+        textarea {
+            height: 150px; 
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 1.2em; 
+            overflow: auto; 
+        }
+        .file-types {
+            font-size: 0.9em;
+            color: #b0b0b0;
+            margin-top: -10px;
+            margin-bottom: 15px;
+            text-align: left;
+            width: 100%;
+        }
+        .loading {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5em;
+            color: #28a745;
+        }
+        .home-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #007acc;
+            padding: 10px 15px;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            z-index: 10;
+        }
+        .home-button:hover {
+            background-color: #007acc;
+        }
+        .feature-list {
+            margin-top: 20px;
+            color: #b0b0b0;
+            text-align: left;
+            width: 100%;
+        }
+        .feature {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<a class="home-button" href="/main.html">Home</a>
+<div class="form-container">
+    <h1>Upload and Encrypt</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="text" name="serverurl" placeholder="Enter server port" required>
+        <input type="text" name="filename" placeholder="Enter file name" required>
+        <input type="file" name="image" accept="image/*" required>
+        <div class="file-types">Accepted file types: .png</div>
+        <textarea name="message" placeholder="Enter message to encrypt" required></textarea>
+        <button type="submit">Upload and Encrypt</button>
+    </form>
+    <div id="notification" class="notification"></div>
+    <div id="loading" class="loading"><i class="fas fa-spinner fa-spin"></i> Uploading...</div>
+</div>
+
+<script>
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const loading = document.getElementById('loading');
+        
+        loading.style.display = 'block';
+
+        fetch('/upload_encrypt', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => {
+            showNotification('success', 'File uploaded and encrypted successfully!');
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 2000);
+        })
+        .catch(error => {
+            showNotification('error', 'An error occurred: ' + error.message);
+        })
+        .finally(() => {
+            loading.style.display = 'none';
+        });
+    });
+
+    function showNotification(type, message) {
+        const notification = document.getElementById('notification');
+        notification.className = 'notification ' + (type === 'success' ? 'success' : 'error');
+        notification.textContent = message;
+        notification.style.display = 'block';
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, 3000);
+    }
+</script>
+
+</body>
+</html>
