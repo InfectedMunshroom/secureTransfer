@@ -113,6 +113,10 @@ func uploadEncryptHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	url := r.FormValue("serverurl")
+	if url == "" {
+		http.Error(w, "Server url is required in formt <ip>:<port>", http.StatusBadRequest)
+	}
 	// Encrypt the message
 	encryptedMsg, err := encryptAES([]byte(message), key)
 	if err != nil {
@@ -133,7 +137,7 @@ func uploadEncryptHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = client.UploadFilesAutomated(outputPath, "./final.pub")
+	err = client.UploadFilesAutomated(outputPath, "./final.pub", url)
 	if err != nil {
 		http.Error(w, "Error in uploading image to server", http.StatusInternalServerError)
 		fmt.Println(err)

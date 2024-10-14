@@ -87,10 +87,10 @@ func UploadFiles(filePath, aesFilePath, url string) error {
 	return nil
 }
 
-func UploadFilesAutomated(filePath, rsaFilePath string) error {
+func UploadFilesAutomated(filePath, rsaFilePath, url string) error {
 	// Paths to the files to be uploaded
 	aeskey := "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-	url := "http://localhost:8081/upload"
+	url = "http://" + url + "/upload"
 	encryptedFile, err := encryptdecrypt.EncodeFile([]byte(aeskey), filePath)
 	if err != nil {
 		return err
