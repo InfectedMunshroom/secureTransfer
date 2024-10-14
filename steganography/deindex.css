@@ -1,0 +1,84 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color:  #0d1117;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    position: relative; 
+}
+.container {
+    background-color: #161b22;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    padding: 40px 30px;
+    width: 400px;
+    text-align: center;
+}
+h1 {
+    color: #007acc;
+    margin-bottom: 35px;
+}
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
+    text-align: left;
+}
+input[type="file"] {
+    margin-bottom: 20px;
+    background-color: #21262d;
+    color: #ffffff;
+    border: 1px solid #666;
+    border-radius: 4px;
+    padding: 10px;
+    width: calc(100% - 20px);
+}
+button {
+    background-color: #007acc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: 100%;
+    font-size: 16px;
+    margin-top: 10px;
+}
+button:hover {
+    background-color: #22863a;
+}
+.notification {
+    margin: 20px 0;
+    padding: 10px;
+    border-radius: 5px;
+    display: none;
+}
+.success {
+    background-color: #28a745;
+    color: #ffffff;
+}
+.error {
+    background-color: #dc3545;
+    color: #ffffff;
+}
+.home-button {
+    position: absolute; 
+    top: 20px;
+    left: 20px; 
+    background-color: #007acc;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+.home-button:hover {
+    background-color: #007acc;
+}
