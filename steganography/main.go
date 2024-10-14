@@ -22,7 +22,7 @@ var key = []byte("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") // 32-byte key
 
 func main() {
 	http.HandleFunc("/down", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./download.html") // Serve download.html from the root directory
+		http.ServeFile(w, r, "./download.html")
 	})
 	http.HandleFunc("/decrypt", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./deindex.html") // Serve decrypt.html from the root directory
