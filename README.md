@@ -1,3 +1,11 @@
+# Contributors
+
+## Ayushman Agrawal Hingorani
+[LinkedIn Profile](https://www.linkedin.com/in/ayushman-agrawal-hingorani-8023b7192)
+
+## Sanya Wadhawan
+[LinkedIn Profile](https://www.linkedin.com/in/sanya-wadhawan1/)
+
 # Things to do:
 
 1. There is a file known as upload.go in folder client->upload
