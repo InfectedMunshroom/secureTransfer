@@ -33,6 +33,18 @@ func createFileField(writer *multipart.Writer, fieldname, filename string) error
 	return nil
 }
 
+func createField(writer *multipart.Writer, fieldname, value string) error {
+	part, err := writer.CreateFormField(fieldname)
+	if err != nil {
+		return fmt.Errorf("error creating form field: %v", err)
+	}
+	_, err = part.Write([]byte(value))
+	if err != nil {
+		return fmt.Errorf("error writing form field: %v", err)
+	}
+	return nil
+}
+
 func UploadFiles(filePath, aesFilePath, attestation, url string) error {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -45,8 +57,8 @@ func UploadFiles(filePath, aesFilePath, attestation, url string) error {
 		return fmt.Errorf("error adding AES file field: %v", err)
 	}
 
-	if err := createFileField(writer, "attestation", attestation); err != nil {
-		return fmt.Errorf("error adding attestationn field: %v", err)
+	if err := createField(writer, "attestation", attestation); err != nil {
+		return fmt.Errorf("error adding attestation field: %v", err)
 	}
 
 	err := writer.Close()
