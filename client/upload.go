@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"secureTransfer/encryptdecrypt"
+	"time"
 )
 
 func createFileField(writer *multipart.Writer, fieldname, filename string) error {
@@ -32,7 +33,7 @@ func createFileField(writer *multipart.Writer, fieldname, filename string) error
 	return nil
 }
 
-func UploadFiles(filePath, aesFilePath, url string) error {
+func UploadFiles(filePath, aesFilePath, attestation, url string) error {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 
@@ -42,6 +43,10 @@ func UploadFiles(filePath, aesFilePath, url string) error {
 
 	if err := createFileField(writer, "aesFile", aesFilePath); err != nil {
 		return fmt.Errorf("error adding AES file field: %v", err)
+	}
+
+	if err := createFileField(writer, "attestation", attestation); err != nil {
+		return fmt.Errorf("error adding attestationn field: %v", err)
 	}
 
 	err := writer.Close()
@@ -94,8 +99,8 @@ func UploadFilesAutomated(filePath, rsaFilePath, url string) error {
 	}
 
 	err = ioutil.WriteFile(nameAES, encryptedKey, 0644)
-
-	err = UploadFiles(name, nameAES, url)
+	attestation := fmt.Sprintf("Attestation-%d", time.Now().Unix())
+	err = UploadFiles(name, nameAES, attestation, url)
 	if err != nil {
 		return err
 	} else {

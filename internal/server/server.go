@@ -1,6 +1,7 @@
 package server
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -34,6 +35,12 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 
 	if !strings.HasPrefix(aesHandler.Filename, "aes_") || !strings.HasSuffix(handler.Filename, ".png") {
 		fmt.Fprintf(w, "Invalid file naming convention. Use aes_<file name>.png and <file name>.png")
+		return
+	}
+
+	attestation := r.FormValue("attestation")
+	if attestation == "" {
+		http.Error(w, "Attestation missing", http.StatusBadRequest)
 		return
 	}
 
@@ -91,6 +98,28 @@ func UploadFiles(w http.ResponseWriter, r *http.Request) {
 	err = ioutil.WriteFile(decryptedFilePath, decryptedFileBytes, 0644)
 	if err != nil {
 		fmt.Fprintf(w, "Error saving decrypted file: %v", err)
+		return
+	}
+
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbName := os.Getenv("DB_NAME")
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbHost, dbPort, dbName)
+	db, err := sql.Open("mysql", dsn)
+
+	if err != nil {
+		http.Error(w, "Database conection error", http.StatusInternalServerError)
+		return
+	}
+
+	defer db.Close()
+
+	_, err = db.Exec("INSERT INTO attestations (filename, attestation) VALUES(?,?)", handler.Filename, attestation)
+	if err != nil {
+		http.Error(w, "Failed to store attestation", http.StatusInternalServerError)
 		return
 	}
 
