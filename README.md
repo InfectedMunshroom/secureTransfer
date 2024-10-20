@@ -8,10 +8,3 @@ Sanya Wadhawan ([LinkedIn](https://www.linkedin.com/in/sanya-wadhawan1/) | [Emai
 
 
 
-# Aim
-1. Creation of a Managed File Transfer System
-
-
-# Current Progress
-1. Around 20-30 percent
-2. Prototype made and test between 2 clients using a server as the middle ground for communication
