@@ -6,268 +6,310 @@
     <title>Secure File Transfer</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+  <style>
+ * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Roboto', sans-serif;
+        background: linear-gradient(135deg, #e1f5fe, #bbdefb);
+        color: #34495e;
+        line-height: 1.6;
+        padding: 20px;
+        overflow-x: hidden; 
+    }
+    
+    nav {
+        background: rgba(52, 152, 219, 0.9);
+        padding: 15px;
+        position: sticky;
+        top: 0;
+        width: 100%;
+        z-index: 1000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        border-radius: 0 0 10px 10px;
+        transition: background 0.3s, transform 0.3s;
+    }
+    
+    nav:hover {
+        background: rgba(52, 152, 219, 1);
+        transform: translateY(-2px);
+    }
+    
+    nav a {
+        color: #ffffff;
+        text-decoration: none;
+        margin-right: 20px;
+        transition: color 0.3s, transform 0.2s;
+        font-size: 1rem;
+        padding: 10px 15px;
+        border-radius: 25px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    nav button {
+        color: #ffffff;
+        text-decoration: none;
+        transition: color 0.3s, transform 0.2s;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        font-size: 1rem;
+        border-radius: 25px;
+    }
+    
+    nav a:hover,
+    nav button:hover {
+        color: #ffcc80;
+        transform: scale(1.1);
+    }
+    
+    .scrolling-updates {
+        background: rgba(97, 192, 196, 0.9);
+        padding: 5px; 
+        border-radius: 5px;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        white-space: nowrap;
+        position: relative;
+        animation: scroll 20s linear infinite;
+        width: 100%;
+        margin: 20px 0;
+    }
+    
+    @media (max-width: 768px) {
+        .scrolling-updates {
+            padding: 5px 10px; /* Adjust padding if needed for smaller screens */
         }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #0d1117;
-            color: #c9d1d9;
-            line-height: 1.6;
-            padding: 20px;
-            overflow-x: hidden;
+    }
+    
+    @keyframes scroll {
+        from {
+            transform: translateX(100%);
         }
-
-        nav {
-            background-color: #161b22;
-            padding: 15px;
-            position: sticky;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            display: flex;
-            justify-content: space-between;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        to {
+            transform: translateX(-100%);
         }
-
-        nav a {
-            color: #58a6ff;
-            text-decoration: none;
-            font-size: 1.1rem;
-            margin-right: 15px;
-            transition: color 0.3s;
-        }
-
-        nav a:hover {
-            color: #2ea043;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 10px;
-            border-bottom: 2px solid #58a6ff;
-        }
-
-        header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-
-        header p {
-            font-size: 1.1rem;
-            color: #8b949e;
-        }
-
-        .container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .section {
-            background-color: #161b22;
-            padding: 25px;
-            border-radius: 10px;
-            transition: transform 0.2s, box-shadow 0.3s;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-
-        .section:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .section h2 {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-            color: #58a6ff;
-        }
-
-        .section p {
-            font-size: 1rem;
-            color: #8b949e;
-            margin-bottom: 15px;
-        }
-
-        .section button {
-            background-color: #238636;
-            color: #fff;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s;
-            position: relative;
-            overflow: hidden;
-            font-weight: 500;
-        }
-
-        .section button:hover {
-            background-color: #2ea043;
-        }
-
-        .section button:focus {
-            outline: none;
-        }
-
-        .section button[title]:hover::after {
-            content: attr(title);
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            bottom: -30px;
-            background-color: #161b22;
-            color: #fff;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            white-space: nowrap;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 30px;
-            color: #8b949e;
-        }
-
-        footer p {
-            margin-bottom: 5px;
-        }
-
-        footer a {
-            color: #58a6ff;
-            text-decoration: none;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
-        }
-
-        .manual {
-            margin-top: 30px;
-            background-color: #161b22;
-            padding: 20px;
-            border-radius: 10px;
-        }
-
-        .manual h2 {
-            font-size: 1.8rem;
-            color: #58a6ff;
-            margin-bottom: 15px;
-        }
-
-        .accordion-item {
-            background-color: #0d1117;
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
-
-        .accordion-item-header {
-            padding: 10px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            background-color: #161b22;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-
-        .accordion-item-body {
-            display: none;
-            padding: 10px;
-            color: #8b949e;
-            background-color: #0d1117;
-            border-radius: 5px;
-        }
-
-        .accordion-item-header:hover {
-            background-color: #1f2329;
-        }
-
-        .accordion-item.active .accordion-item-body {
-            display: block;
-        }
-
-        #backToTop {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #161b22;
-            color: #58a6ff;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.5rem;
-            transition: background-color 0.3s;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-        }
-
-        #backToTop:hover {
-            background-color: #238636;
-        }
-
-        .notification {
-            display: none;
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #238636;
-            color: #fff;
-            padding: 15px 20px;
-            border-radius: 5px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            z-index: 1001;
-            transition: opacity 0.5s;
-        }
-
-        .social-icons {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .social-icons a {
-            color: #58a6ff;
-            margin: 0 10px;
-            font-size: 1.5rem;
-        }
-
-        .section button {
-            border-radius: 25px;
-            font-weight: 500;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.2s;
-        }
-
-        .section button:hover {
-            transform: scale(1.05);
-        }
-    </style>
+    }
+    
+    .updates-text {
+        padding: 10px;
+    }
+    
+    header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 20px;
+    }
+    
+    header h1 {
+        font-size: 2.8rem;
+        margin-bottom: 10px;
+        color: #003f7f;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.5s ease;
+    }
+    
+    header p {
+        font-size: 1.3rem;
+        color: #555555;
+    }
+    
+    .container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        max-width: 100%; /* Full width */
+        margin: 0 auto;
+    }
+    
+    .section {
+        background: rgba(90, 172, 234, 0.15);
+        backdrop-filter: blur(15px);
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        position: relative;
+        border-left: 5px solid #00a3cc;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .section:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        background: rgba(255, 255, 255, 1);
+        animation: pulse 0.6s infinite alternate;
+    }
+    
+    .section h2 {
+        font-size: 2rem;
+        margin-bottom: 15px;
+        color: #4a9bd1;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        animation: fadeInUp 0.5s ease;
+    }
+    
+    .section p {
+        font-size: 1.1rem;
+        color: #34495e;
+        margin-bottom: 15px;
+    }
+    
+    .section button {
+        background: #009688;
+        color: #ffffff;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+        font-weight: 600;
+    }
+    
+    .section button:hover {
+        background: #00796b;
+        transform: scale(1.05);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    footer {
+        text-align: center;
+        margin-top: 30px;
+    }
+    
+    footer p {
+        margin-bottom: 5px;
+        color: #555555;
+    }
+    
+    footer a {
+        color: #4a9bd1;
+        text-decoration: none;
+        transition: text-decoration 0.2s, transform 0.2s;
+    }
+    
+    footer a:hover {
+        text-decoration: underline;
+        transform: translateY(-2px);
+    }
+    
+    .manual {
+        margin-top: 30px;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.5s ease;
+    }
+    
+    .manual h2 {
+        font-size: 2rem;
+        color: #4a9bd1;
+        margin-bottom: 15px;
+    }
+    
+    .accordion-item {
+        background-color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 15px;
+        border-radius: 5px;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s, box-shadow 0.2s;
+        animation: fadeIn 0.5s ease;
+    }
+    
+    .accordion-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .accordion-item-header {
+        padding: 15px;
+        cursor: pointer;
+        font-size: 1.3rem;
+        background: rgba(74, 155, 209, 0.9);
+        border-radius: 5px;
+        transition: background 0.3s, transform 0.2s;
+    }
+    
+    .accordion-item-body {
+        display: none; /* Keep this for default hidden state */
+        padding: 15px;
+        color: #34495e;
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 5px;
+    }
+    
+    .accordion-item-header:hover {
+        background: rgba(74, 155, 209, 1);
+        transform: scale(1.02);
+    }
+    
+    .accordion-item.active .accordion-item-body {
+        display: block;
+    }
+    
+    #backToTop {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #007bff;
+        color: #ffffff;
+        border: none;
+        padding: 12px 15px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1.5rem;
+        transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+    }
+    
+    #backToTop:hover {
+        background: #0056b3;
+        transform: scale(1.1);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .notification {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 123, 255, 0.9);
+        color: white;
+        font-size: 1rem;
+        border-radius: 5px;
+        padding: 15px 20px;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        transition: opacity 0.3s, transform 0.3s;
+    }
+</style>    
 </head>
 <body>
-
     <nav>
-        <div>
-            <a href="#home">Home</a>
-            <a href="#FAQs">Manual</a>
-            <a href="#credits">Credits</a>
+        <h1>Secure File Transfer</h1>
+        <div class="header-buttons">
+            <a href="#container"><button class="header-button">Home</button></a>
+            <a href="#FAQs"><button class="header-button">Manual</button></a>
+            <a href="#footer"><button class="header-button">Credits</button></a>
         </div>
     </nav>
 
-    <header id="home">
-        <h1>Secure File Transfer</h1>
-        <p>Secure File transfer with steganography. Simple. Secure. Scalable.</p>
+    <div class="scrolling-updates">
+        <div class="updates-text">
+            <p>Get your data Triple Layer Encrypted using AES & RSA|       Experience the magic of Steganography! |        Easy file sharing and access. </p>
+        </div>
+    </div>
+
+    <header>
+        <h1>Welcome to Secure File Transferring for Hospitals</h1>
+        <p>Simple | Safe | Secure | Scalable.</p>
     </header>
 
     <div class="container">
@@ -295,11 +337,10 @@
         </div>
 
     </div>
-
     <div id="FAQs" class="manual">
         <h2>FAQs</h2>
         <div class="accordion-item">
-            <div class="accordion-item-header" onclick="toggleAccordion(event)">Whats the process?</div>
+            <div class="accordion-item-header" onclick="toggleAccordion(this)">What's the process?</div>
             <div class="accordion-item-body">
                 <p>1. Encrypt & Upload: The message you enter is encrypted via AES onto the image you enter, which is further encrypted with AES and stored onto the server.</p>
                 <p>2. Download: The encrypted image is made available at the desired location by specifying the file name, which can be downloaded easily.</p>
@@ -307,35 +348,34 @@
             </div>
         </div>
         <div class="accordion-item">
-            <div class="accordion-item-header" onclick="toggleAccordion(event)">How is it secure?</div>
+            <div class="accordion-item-header" onclick="toggleAccordion(this)">How is it secure?</div>
             <div class="accordion-item-body">
                 <p>This file-transfer securing webserver uses a double AES encryption, one for securely embedding the message inside the image using steganography, second for upload of the file by AES, and the transfer of an AES key encrypted by RSA.</p>
             </div>
         </div>
         <div class="accordion-item">
-            <div class="accordion-item-header" onclick="toggleAccordion(event)">How to Encrypt?</div>
+            <div class="accordion-item-header" onclick="toggleAccordion(this)">How to Encrypt?</div>
             <div class="accordion-item-body">
-                <p>To encrypt a file, browse it on your device in png format, simply upload it;
-                    enter the message you want to be embedded in the image and click on the upload button.</p>
+                <p>To encrypt a file, browse it on your device in png format, simply upload it; enter the message you want to be embedded in the image and click on the upload button.</p>
             </div>
         </div>
         <div class="accordion-item">
-            <div class="accordion-item-header" onclick="toggleAccordion(event)">How to Decrypt?</div>
+            <div class="accordion-item-header" onclick="toggleAccordion(this)">How to Decrypt?</div>
             <div class="accordion-item-body">
-                <p>To decrypt a file, upload the encrypted image from your device and click the decrypt button. You will get the output as the original decrypted message</p>
+                <p>To decrypt a file, upload the encrypted image from your device and click the decrypt button. You will get the output as the original decrypted message.</p>
             </div>
         </div>
     </div>
 
-    <footer>
+    <footer id="footer">
         <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 10px;">
-            <p style="font-size: 1rem; margin: 5px 15px; color: #c9d1d9;">
+            <p style="font-size: 1rem; margin: 5px 15px; color: #385f87;">
                 Ayushman Agrawal Hingorani 
                 <a href="https://www.linkedin.com/in/ayushman-agrawal-hingorani-8023b7192" style="margin-left: 5px;">
                     <i class="fab fa-linkedin-in" style="color: #58a6ff;"></i>
                 </a>
             </p>
-            <p style="font-size: 1rem; margin: 5px 15px; color: #c9d1d9;">
+            <p style="font-size: 1rem; margin: 5px 15px; color: #385f87;">
                 Sanya Wadhawan 
                 <a href="https://www.linkedin.com/in/sanya-wadhawan1/" style="margin-left: 5px;">
                     <i class="fab fa-linkedin-in" style="color: #58a6ff;"></i>
@@ -344,29 +384,46 @@
         </div>
     </footer>
 
-
-    <button id="backToTop" title="Back to top"><i class="fas fa-chevron-up"></i></button>
-
     <script>
-        const backToTopButton = document.getElementById("backToTop");
-        backToTopButton.addEventListener("click", () => {
-            window.scrollTo({top: 0, behavior: "smooth"});
-        });
-
-        function toggleAccordion(event) {
-            const item = event.currentTarget.parentElement;
-            item.classList.toggle("active");
+        function toggleAccordion(element) {
+            element.nextElementSibling.classList.toggle('active');
         }
+        document.getElementById('uploadBtn').onclick = function() {
+            const files = document.getElementById('fileInput').files;
+            if (files.length > 0) {
+                showNotification('Files uploaded successfully!');
+            } else {
+                showNotification('No files selected.');
+            }
+        };
+
+        document.getElementById('downloadBtn').onclick = function() {
+            const fileID = document.getElementById('fileID').value;
+            if (fileID) {
+                // Simulate file download and show notification
+                showNotification(`File with ID ${fileID} downloaded successfully!`);
+            } else {
+                showNotification('Please enter a valid File ID.');
+            }
+        };
 
         function showNotification(message) {
-            const notification = document.getElementById("notification");
-            notification.textContent = message;
-            notification.style.display = "block";
+            const notification = document.getElementById('notification');
+            notification.innerHTML = message;
+            notification.style.display = 'block';
             setTimeout(() => {
-                notification.style.display = "none";
+                notification.style.display = 'none';
             }, 3000);
         }
-    </script>
 
+        function toggleAccordion(header) {
+            const item = header.parentElement; // Get the accordion item
+            const body = item.querySelector('.accordion-item-body'); // Get the body
+            const isActive = item.classList.toggle('active'); // Toggle the active class
+            body.style.display = isActive ? 'block' : 'none'; // Show/hide body
+        }
+
+
+    </script>
 </body>
 </html>
