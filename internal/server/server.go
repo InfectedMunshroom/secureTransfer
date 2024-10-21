@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"secureTransfer/encryptdecrypt"
 	"strings"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func UploadFiles(w http.ResponseWriter, r *http.Request) {
